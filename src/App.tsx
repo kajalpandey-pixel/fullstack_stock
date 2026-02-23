@@ -15,17 +15,24 @@ function App() {
             setUserName(user) ; 
           }    
           else {
-            const enterUsername = prompt("Enter you username: ") ;  
+            let enterUsername = prompt("Enter you username: ") ;  
 
-             if(enterUsername && enterUsername.trim() !== ""){
-                 localStorage.setItem("username"  , enterUsername) ;
-
-                 setUserName(enterUsername)  ;
+             while(!enterUsername || enterUsername.trim() === ""){
+                enterUsername = prompt("Kindly write your username before accessing") ; 
              }
+
+             const finalUsername = enterUsername.trim() ; 
+             localStorage.setItem("username" , finalUsername)  ;
+             setUserName(finalUsername) ; 
           }
             
         
-     }, []) 
+     }, [])   
+
+     if(!username){
+        return 
+        <div style ={{textAlign: "center" , marginTop: "50px"}}>Wait till it loads .... </div>
+     }
       
      
 
@@ -35,9 +42,9 @@ function App() {
         <br/>
         <br/>
 
-        <Dashboard/>
+        <Dashboard username = {username}/>
     </>
   )
 }
 
-export default App
+export default App ; 

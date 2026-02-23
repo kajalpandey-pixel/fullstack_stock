@@ -15,15 +15,17 @@ interface FetchStocksResponse {
 interface FetchStocksArgs {
   page: number;
   pageSize: number;
+  username :string ;
   isWatchlistOnly: boolean;
+
 }
 
 export const fetchStocks = createAsyncThunk<FetchStocksResponse, FetchStocksArgs>(
   'stocks/fetchStocks',
-  async ({ page, pageSize, isWatchlistOnly }, { rejectWithValue }) => {
+  async ({ page, pageSize, username , isWatchlistOnly}, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/stocks?page=${page}&limit=${pageSize}&username=guest&watchlistOnly=${isWatchlistOnly}`
+        `http://localhost:8080/api/stocks?page=${page}&limit=${pageSize}&username=${username}&watchlistOnly=${isWatchlistOnly}`
       );
       if (!response.ok) throw new Error('Failed to fetch');
       return await response.json(); 
@@ -35,12 +37,12 @@ export const fetchStocks = createAsyncThunk<FetchStocksResponse, FetchStocksArgs
 
 export const toggleWatchlist = createAsyncThunk(
   'stocks/toggle',
-  async (stockId: string, { rejectWithValue }) => {
+  async ({username , stockId} :{username :string ;stockId: string }, { rejectWithValue }) => {
     try {
       const response = await fetch('http://localhost:8080/api/watchlist/toggle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: "guest", stockId })
+        body: JSON.stringify({ username , stockId })
       });
       
       if (!response.ok) throw new Error('Toggle failed');
@@ -55,7 +57,7 @@ export const toggleWatchlist = createAsyncThunk(
 interface StockState {
   items: Stock[];
   pagination: { currentPage: number; pageSize: number; totalCount: number; };
-  loading: boolean;
+  loading: boolean;  
   error: string | null;
 }
 
@@ -69,6 +71,7 @@ const initialState: StockState = {
 const stockSlice = createSlice({
   name: 'stocks',
   initialState,
+  // this is written for getting it(stocks for 1st page) for first loading 
   reducers: {
     setPage: (state, action: PayloadAction<number>) => {
       state.pagination.currentPage = action.payload;

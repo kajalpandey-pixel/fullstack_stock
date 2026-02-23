@@ -5,7 +5,7 @@ import { type RootState, type AppDispatch } from "../redux/store";
 import { fetchStocks, toggleWatchlist } from "../redux/slices/StockSlice";
 import '../styles/dashboard.scss'
 
-export const Dashboard = () => {
+export const Dashboard = ({username } : {username :string}) => {
   const [tabSelected, setTabSelected] = useState<"Explore" | "WatchList">("Explore");
   const dispatch = useDispatch<AppDispatch>();
 
@@ -15,16 +15,17 @@ export const Dashboard = () => {
     dispatch(fetchStocks({
       page: pagination.currentPage,
       pageSize: pagination.pageSize,
+      username :username , 
       isWatchlistOnly: tabSelected === "WatchList"
     }));
   };
 
   useEffect(() => {
     loadData();
-  }, [tabSelected, pagination.currentPage]);
+  }, [tabSelected, pagination.currentPage , username]);
 
   const handleToggle = async (stockId: string) => {
-    await dispatch(toggleWatchlist(stockId));
+    await dispatch(toggleWatchlist({username , stockId}));
     if (tabSelected === "WatchList") {
       loadData();
     }
@@ -32,7 +33,8 @@ export const Dashboard = () => {
 
   return (
     <div>
-     
+      
+      <p>User : <strong>{username}</strong></p>
 
       <nav>
         <button onClick={() => setTabSelected("Explore")} >
